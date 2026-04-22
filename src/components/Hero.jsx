@@ -56,8 +56,9 @@ const Hero = () => {
   const imageOpacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 0.5, 0]);
 
   const statCards = [
-    { value: '8.86', label: 'Diploma CGPA', color: '#38bdf8', icon: <GraduationCap size={20} /> },
-    { value: '6+', label: 'Hackathons', color: '#818cf8', icon: <Trophy size={20} /> },
+    { value: '7.25', label: 'B.E. CGPA', color: '#38bdf8', icon: <GraduationCap size={20} /> },
+    { value: '8.86', label: 'Diploma CGPA', color: '#818cf8', icon: <GraduationCap size={20} /> },
+    { value: '6+', label: 'Hackathons', color: '#fbbf24', icon: <Trophy size={20} /> },
     { value: '6mo', label: 'Internship', color: '#fb7185', icon: <Briefcase size={20} /> },
   ];
 
@@ -149,7 +150,7 @@ const Hero = () => {
               color: 'var(--text-secondary)', fontSize: '1.05rem', maxWidth: '650px', 
               marginBottom: '2rem', lineHeight: 1.8, fontWeight: 400
             }}>
-              Passionate Full Stack Developer and Undergraduate Engineering Student (B.E.) with a strong academic foundation (Diploma CGPA: 8.86). 
+              Passionate Full Stack Developer and Undergraduate Engineering Student (B.E.) with a strong academic record (B.E. CGPA: 7.25, Diploma CGPA: 8.86). 
               Specialized in architecting scalable applications using <strong style={{color: 'var(--text-primary)'}}>Java, Python, React, and Spring Boot</strong>. 
               Dedicated to solving complex problems through innovative software solutions and hands-on project leadership.
             </p>
@@ -255,7 +256,7 @@ const Hero = () => {
             </TiltCard>
 
             {/* 3D Stat Cards */}
-            <div style={{ display: 'flex', gap: '0.8rem', width: '100%', maxWidth: '340px' }}>
+            <div style={{ display: 'flex', gap: '0.8rem', width: '100%', maxWidth: '420px' }}>
               {statCards.map((stat, i) => (
                 <motion.div 
                   key={i}

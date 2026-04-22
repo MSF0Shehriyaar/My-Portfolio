@@ -197,7 +197,16 @@ const Experience = () => {
                     <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600 }}>{edu.name}</p>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{edu.degree}</p>
                   </div>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: edu.color, background: `${edu.color}12`, padding: '0.3rem 0.8rem', borderRadius: '8px', border: `1px solid ${edu.color}20` }}>
+                  <span style={{ 
+                    fontSize: '0.82rem', 
+                    fontWeight: 800, 
+                    color: edu.color, 
+                    background: `${edu.color}15`, 
+                    padding: '0.4rem 1rem', 
+                    borderRadius: '10px', 
+                    border: `1px solid ${edu.color}30`,
+                    boxShadow: i === 0 ? `0 0 15px ${edu.color}15` : 'none'
+                  }}>
                     {edu.score}
                   </span>
                 </motion.div>
