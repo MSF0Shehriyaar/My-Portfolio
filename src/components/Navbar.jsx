@@ -70,9 +70,9 @@ const Navbar = () => {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <div className="desktop-only" style={{ display: 'flex', gap: '0.8rem', color: 'var(--text-secondary)' }}>
-          <motion.a href="https://github.com" target="_blank" rel="noopener noreferrer" whileHover={{ color: '#38bdf8', y: -2, scale: 1.1 }} transition={{ duration: 0.2 }}><FaGithub size={18} /></motion.a>
-          <motion.a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" whileHover={{ color: '#818cf8', y: -2, scale: 1.1 }} transition={{ duration: 0.2 }}><FaLinkedin size={18} /></motion.a>
+        <div style={{ display: 'flex', gap: '0.6rem' }}>
+          <motion.a whileHover={{ y: -4, scale: 1.1, color: '#38bdf8' }} href="https://github.com/MSF0Shehriyaar" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', padding: '0.7rem', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid var(--border-color)', display: 'flex', transition: 'all 0.3s' }}><FaGithub size={18} /></motion.a>
+          <motion.a whileHover={{ y: -4, scale: 1.1, color: '#818cf8' }} href="https://www.linkedin.com/in/mohammed-shehriyaar-f-4a211a405/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', padding: '0.7rem', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid var(--border-color)', display: 'flex', transition: 'all 0.3s' }}><FaLinkedin size={18} /></motion.a>
         </div>
         
         <motion.a 
@@ -154,8 +154,8 @@ const Navbar = () => {
             
             <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               <div style={{ display: 'flex', gap: '1.5rem', color: '#fff' }}>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer"><FaGithub size={28} /></a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"><FaLinkedin size={28} /></a>
+                <a href="https://github.com/MSF0Shehriyaar" target="_blank" rel="noopener noreferrer"><FaGithub size={28} /></a>
+                <a href="https://www.linkedin.com/in/mohammed-shehriyaar-f-4a211a405/" target="_blank" rel="noopener noreferrer"><FaLinkedin size={28} /></a>
               </div>
               <a 
                 href="/Mohammed_Shehriyaar_F_Resume.pdf" 

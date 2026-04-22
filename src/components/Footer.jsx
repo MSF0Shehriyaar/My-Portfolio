@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Send, Heart, Mail, Phone } from 'lucide-react';
-import { FaLinkedin, FaGithub, FaTwitter } from 'react-icons/fa';
+import { FaLinkedin, FaGithub } from 'react-icons/fa';
 
 const Footer = () => {
   return (
@@ -78,9 +78,8 @@ const Footer = () => {
               Send Message <Send size={20} />
             </motion.a>
             <div style={{ display: 'flex', gap: '1.5rem', marginTop: '3rem' }}>
-              <motion.a whileHover={{ color: '#38bdf8', y: -5, scale: 1.2 }} href="#" style={{ color: 'var(--text-secondary)', transition: 'all 0.3s' }}><FaLinkedin size={26} /></motion.a>
-              <motion.a whileHover={{ color: '#f1f5f9', y: -5, scale: 1.2 }} href="#" style={{ color: 'var(--text-secondary)', transition: 'all 0.3s' }}><FaGithub size={26} /></motion.a>
-              <motion.a whileHover={{ color: '#1da1f2', y: -5, scale: 1.2 }} href="#" style={{ color: 'var(--text-secondary)', transition: 'all 0.3s' }}><FaTwitter size={26} /></motion.a>
+              <motion.a whileHover={{ color: '#38bdf8', y: -5, scale: 1.2 }} href="https://www.linkedin.com/in/mohammed-shehriyaar-f-4a211a405/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', transition: 'all 0.3s' }}><FaLinkedin size={26} /></motion.a>
+              <motion.a whileHover={{ color: '#f1f5f9', y: -5, scale: 1.2 }} href="https://github.com/MSF0Shehriyaar" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', transition: 'all 0.3s' }}><FaGithub size={26} /></motion.a>
             </div>
           </div>
 
