@@ -5,9 +5,9 @@ import { FaLinkedin, FaGithub } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer id="contact" style={{ 
-      backgroundColor: 'transparent', 
-      padding: '8rem 2rem 4rem 2rem', 
+    <footer id="contact" style={{
+      backgroundColor: 'transparent',
+      padding: '8rem 2rem 4rem 2rem',
       borderTop: '1px solid var(--border-color)',
       position: 'relative',
       overflow: 'hidden'
@@ -25,7 +25,7 @@ const Footer = () => {
         zIndex: 0
       }} />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false }}
@@ -33,7 +33,7 @@ const Footer = () => {
         className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '1000px' }}
       >
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', marginBottom: '6rem', textAlign: 'left' }}>
-          
+
           <div>
             <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '3rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em', color: 'var(--text-primary)' }}>
               Let's <span className="text-gradient-accent">Connect</span>
@@ -58,19 +58,19 @@ const Footer = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
-            <motion.a 
+            <motion.a
               whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(251, 113, 133, 0.2)' }}
               whileTap={{ scale: 0.95 }}
-              href="mailto:MOHAMMEDSHEHRIYAARF4@gmail.com" 
-              style={{ 
-                padding: '1.2rem 3rem', 
-                fontSize: '1.1rem', 
+              href="mailto:MOHAMMEDSHEHRIYAARF4@gmail.com"
+              style={{
+                padding: '1.2rem 3rem',
+                fontSize: '1.1rem',
                 fontWeight: 700,
                 background: 'linear-gradient(135deg, #fb7185, #fb923c)',
                 color: '#030712',
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                gap: '0.8rem', 
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.8rem',
                 borderRadius: '16px',
                 boxShadow: '0 10px 25px rgba(251, 113, 133, 0.15)'
               }}
@@ -90,7 +90,7 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} Mohammed Shehriyaar F. — Crafting Digital Excellence.
           </p>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            Engineered with Precision & <Heart size={14} color="#fb7185" fill="#fb7185" style={{ opacity: 0.8 }} /> Passion
+            Engineered with Precision & Passion
           </p>
         </div>
       </motion.div>
