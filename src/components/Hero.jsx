@@ -67,8 +67,8 @@ const Hero = () => {
       ref={containerRef}
       className="section" 
       style={{ 
-        paddingTop: '10rem',
-        paddingBottom: '6rem',
+        paddingTop: 'clamp(6rem, 15vh, 10rem)',
+        paddingBottom: 'clamp(4rem, 10vh, 6rem)',
         backgroundColor: 'transparent',
         minHeight: '100vh',
         display: 'flex',
@@ -87,12 +87,12 @@ const Hero = () => {
       <div className="container" style={{ position: 'relative', zIndex: 10 }}>
         <div style={{ 
           display: 'flex', flexDirection: 'row', alignItems: 'center',
-          justifyContent: 'space-between', gap: '4rem', flexWrap: 'wrap-reverse'
+          justifyContent: 'space-between', gap: 'clamp(2rem, 5vw, 4rem)', flexWrap: 'wrap-reverse'
         }}>
           
           {/* Left Content */}
           <motion.div 
-            style={{ y: layer3Y, flex: '1 1 550px' }}
+            style={{ y: layer3Y, flex: '1 1 320px' }}
             initial={{ opacity: 0, x: -80, rotateY: -15 }}
             animate={{ opacity: 1, x: 0, rotateY: 0 }}
             transition={{ type: 'spring', bounce: 0.2, duration: 1.5 }}

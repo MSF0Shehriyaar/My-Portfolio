@@ -23,11 +23,11 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             style={{ 
               position: 'relative', 
-              width: '95%', 
+              width: '100%', 
               maxWidth: '1000px', 
-              maxHeight: '85vh', 
+              maxHeight: '90vh', 
               backgroundColor: '#0a0f1e', 
-              borderRadius: '28px', 
+              borderRadius: 'clamp(16px, 4vw, 28px)', 
               border: '1px solid rgba(255,255,255,0.08)',
               overflow: 'hidden',
               display: 'flex',
@@ -36,22 +36,22 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
             }}
           >
             {/* Header */}
-            <div style={{ position: 'relative', height: '320px', flexShrink: 0 }}>
+            <div style={{ position: 'relative', height: 'clamp(200px, 40vh, 320px)', flexShrink: 0 }}>
               <img src={project.image} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 20%, #0a0f1e 100%)' }} />
               <motion.button 
                 whileHover={{ scale: 1.1, backgroundColor: 'rgba(251, 113, 133, 0.2)' }}
                 whileTap={{ scale: 0.9 }}
                 onClick={onClose}
-                style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', backgroundColor: 'rgba(3,7,18,0.6)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', width: '44px', height: '44px', borderRadius: '50%', cursor: 'pointer', backdropFilter: 'blur(12px)', transition: 'all 0.3s', zIndex: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ position: 'absolute', top: '1rem', right: '1rem', backgroundColor: 'rgba(3,7,18,0.6)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', backdropFilter: 'blur(12px)', transition: 'all 0.3s', zIndex: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                <X size={22} />
+                <X size={20} />
               </motion.button>
-              <div style={{ position: 'absolute', bottom: '2rem', left: '3rem', right: '3rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: project.color, fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.8rem' }}>
+              <div style={{ position: 'absolute', bottom: '1.5rem', left: 'clamp(1rem, 5vw, 3rem)', right: 'clamp(1rem, 5vw, 3rem)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: project.color, fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>
                   {project.icon} {project.type}
                 </div>
-                <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 900, color: '#fff', fontFamily: 'var(--font-heading)', letterSpacing: '-0.03em', lineHeight: 1.1 }}>{project.title}</h2>
+                <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.8rem)', fontWeight: 900, color: '#fff', fontFamily: 'var(--font-heading)', letterSpacing: '-0.03em', lineHeight: 1.1 }}>{project.title}</h2>
               </div>
             </div>
 
@@ -71,13 +71,13 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
                 <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.8rem', letterSpacing: '-0.02em' }}>
                   <Layout size={24} color={project.color} /> Core Project Features
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
                   {project.detailedFeatures?.map((feature, i) => (
-                    <div key={i} style={{ display: 'flex', gap: '1.2rem', backgroundColor: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <CheckCircle2 size={20} color={project.color} style={{ marginTop: '0.2rem', flexShrink: 0 }} />
+                    <div key={i} style={{ display: 'flex', gap: '1rem', backgroundColor: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <CheckCircle2 size={18} color={project.color} style={{ marginTop: '0.2rem', flexShrink: 0 }} />
                       <div>
-                        <strong style={{ color: '#f1f5f9', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', letterSpacing: '-0.01em' }}>{feature.title}</strong>
-                        <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>{feature.desc}</span>
+                        <strong style={{ color: '#f1f5f9', display: 'block', marginBottom: '0.3rem', fontSize: '1rem', letterSpacing: '-0.01em' }}>{feature.title}</strong>
+                        <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>{feature.desc}</span>
                       </div>
                     </div>
                   ))}
@@ -195,8 +195,8 @@ const Projects = () => {
         
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', 
-          gap: '2.5rem' 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+          gap: '2rem' 
         }}>
           {projects.map((project, index) => (
             <motion.div
