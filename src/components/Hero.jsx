@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Download, GraduationCap, Sparkles, MapPin, Mail, Phone } from 'lucide-react';
+import { ArrowRight, Download, GraduationCap, Sparkles, MapPin, Mail, Phone, Trophy, Briefcase } from 'lucide-react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 /* ── 3D Tilt Card ────────────────────────────────────── */
@@ -56,9 +56,9 @@ const Hero = () => {
   const imageOpacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 0.5, 0]);
 
   const statCards = [
-    { value: '8.86', label: 'Diploma CGPA', color: '#38bdf8', icon: '🎓' },
-    { value: '6+', label: 'Hackathons', color: '#818cf8', icon: '🏆' },
-    { value: '6mo', label: 'Internship', color: '#fb7185', icon: '💼' },
+    { value: '8.86', label: 'Diploma CGPA', color: '#38bdf8', icon: <GraduationCap size={20} /> },
+    { value: '6+', label: 'Hackathons', color: '#818cf8', icon: <Trophy size={20} /> },
+    { value: '6mo', label: 'Internship', color: '#fb7185', icon: <Briefcase size={20} /> },
   ];
 
   return (
@@ -275,9 +275,13 @@ const Hero = () => {
                     backdropFilter: 'blur(10px)',
                     transformStyle: 'preserve-3d',
                     cursor: 'default',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                 >
-                  <span style={{ fontSize: '1.2rem', display: 'block', marginBottom: '0.3rem' }}>{stat.icon}</span>
+                  <span style={{ color: stat.color, marginBottom: '0.5rem' }}>{stat.icon}</span>
                   <p style={{ fontSize: '1.5rem', fontWeight: 800, color: stat.color, fontFamily: 'var(--font-heading)' }}>{stat.value}</p>
                   <p style={{ fontSize: '0.68rem', color: 'var(--text-tertiary)', fontWeight: 500, marginTop: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{stat.label}</p>
                 </motion.div>

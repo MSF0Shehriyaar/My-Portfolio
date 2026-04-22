@@ -91,7 +91,7 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} Mohammed Shehriyaar F. — Crafting Digital Excellence.
           </p>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            Engineered with Precision & Passion
+            Engineered with Precision & <Heart size={14} color="#fb7185" fill="#fb7185" style={{ opacity: 0.8 }} /> Passion
           </p>
         </div>
       </motion.div>

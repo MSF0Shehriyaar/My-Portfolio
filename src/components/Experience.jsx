@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Briefcase, Code2, Award, GraduationCap, ExternalLink, ChevronRight, Zap } from 'lucide-react';
+import { Briefcase, Code2, Award, GraduationCap, ExternalLink, ChevronRight, Zap, Trophy, Coffee, Terminal, ShieldCheck } from 'lucide-react';
 
 /* ── 3D Tilt Card ────────────────────────────────────── */
 const TiltCard = ({ children, style, maxTilt = 8, glowColor = '#38bdf8' }) => {
@@ -57,10 +57,10 @@ const Experience = () => {
   };
 
   const certifications = [
-    { title: "Using Python to Access Web Data", sub: "University of Michigan", pdfUrl: "/Using Python to Access Web Data.pdf", color: "#38bdf8", icon: "🐍" },
-    { title: "Data Structures and Algorithms (C)", sub: "University of Colorado Boulder", pdfUrl: "/Data Structures and Algorithms (C).pdf", color: "#818cf8", icon: "🧮" },
-    { title: "Go Full Stack With Spring Boot and React", sub: "Infosys", pdfUrl: "/Go Full Stack With Spring Boot and React.pdf", color: "#34d399", icon: "☕" },
-    { title: "Internship Completion Certificate", sub: "Torus Solutions", pdfUrl: "/Internship Certificate.pdf", color: "#fb7185", icon: "🏆" }
+    { title: "Using Python to Access Web Data", sub: "University of Michigan", pdfUrl: "/Using Python to Access Web Data.pdf", color: "#38bdf8", icon: <Terminal size={24} /> },
+    { title: "Data Structures and Algorithms (C)", sub: "University of Colorado Boulder", pdfUrl: "/Data Structures and Algorithms (C).pdf", color: "#818cf8", icon: <ShieldCheck size={24} /> },
+    { title: "Go Full Stack With Spring Boot and React", sub: "Infosys", pdfUrl: "/Go Full Stack With Spring Boot and React.pdf", color: "#34d399", icon: <Coffee size={24} /> },
+    { title: "Internship Completion Certificate", sub: "Torus Solutions", pdfUrl: "/Internship Certificate.pdf", color: "#fb7185", icon: <Trophy size={24} /> }
   ];
 
   const skillCategories = [
@@ -238,7 +238,7 @@ const Experience = () => {
                     transformStyle: 'preserve-3d',
                   }}
                 >
-                  <span style={{ fontSize: '1.5rem', transform: 'translateZ(20px)' }}>{cert.icon}</span>
+                  <span style={{ color: cert.color, display: 'flex', transform: 'translateZ(20px)' }}>{cert.icon}</span>
                   <div style={{ flex: 1 }}>
                     <p style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontWeight: 600 }}>{cert.title}</p>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{cert.sub}</p>
