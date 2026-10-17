@@ -1,0 +1,913 @@
+/* A continuous scroll composition with native scrolling, 3D tilt, and damped visual motion */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 32px;
+}
+
+.hero-scroll-stage {
+  --hero-progress: 0;
+  --hero-copy-opacity: 1;
+  --hero-final-opacity: 0;
+}
+
+.hero-scroll-stage .hero {
+  padding-top: 30px;
+}
+
+.hero-scroll-stage .hero-layout {
+  position: relative;
+  display: block;
+  margin: 35px 0 24px;
+  animation: none;
+  min-height: 640px;
+}
+
+.hero-line {
+  display: block;
+  overflow: clip;
+}
+
+.hero-line:last-child {
+  padding-bottom: 0.12em;
+}
+
+.hero-scroll-stage h1 {
+  position: relative;
+  z-index: 5;
+  font-size: clamp(3.8rem, 7.4vw, 7.8rem);
+  line-height: 1.05;
+  max-width: 100%;
+  pointer-events: none;
+}
+
+.hero-art-stage {
+  position: absolute;
+  right: 0;
+  top: 190px;
+  width: 52%;
+  height: 390px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #e5e3df;
+  isolation: isolate;
+  transform-origin: center;
+  z-index: 2;
+  box-shadow: 0 25px 60px rgba(34, 38, 34, 0.15);
+  transform: rotate(-3deg);
+  will-change: width, height, transform;
+}
+
+.hero-art-stage .hero-art {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  object-fit: cover;
+  animation: none;
+  transform: none;
+  will-change: transform;
+}
+
+.hero-art-label {
+  position: absolute;
+  bottom: 24px;
+  left: 28px;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  background: #f7f7f4dc;
+  padding: 10px 14px;
+}
+
+.hero-scroll-stage .hero-intro {
+  position: absolute;
+  left: 0;
+  bottom: 35px;
+  width: 38%;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  z-index: 2;
+}
+
+.hero-scroll-stage .hero-intro p {
+  font-size: 1.0625rem;
+  max-width: 360px;
+  margin-bottom: 5px;
+  flex-basis: 100%;
+}
+
+.hero-scroll-stage .hero-intro .text-link {
+  margin: 0;
+}
+
+.hero-bottom .scroll-invitation {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-size: 0.875rem;
+}
+
+.scroll-track {
+  height: 28px;
+  width: 1px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.scroll-track i {
+  display: block;
+  width: 100%;
+  height: 12px;
+  background: var(--red);
+  animation: scroll-cue 1.8s ease-in-out infinite;
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-14px);
+  }
+
+  100% {
+    transform: translateY(30px);
+  }
+}
+
+body .page-entry-line {
+  animation: none;
+  opacity: 1;
+  transform: scaleX(0);
+  transition: none;
+  height: 3px;
+  z-index: 1000;
+  background: linear-gradient(90deg, #be3e2e, #f16b56, #e7bc9d);
+}
+
+/* 3D Tilt & Specular Light on Cards */
+.project-card,
+.service-item,
+.stat-card {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  transform: perspective(1000px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(var(--card-scale, 1));
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.project-card.is-interacting,
+.service-item.is-interacting,
+.stat-card.is-interacting {
+  transition: transform 0.08s ease-out, box-shadow 0.3s ease;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle 350px at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.12), transparent 80%);
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+.motion-reveal {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.motion-reveal.is-visible,
+.motion-reveal:focus-within {
+  opacity: 1;
+  transform: none;
+}
+
+/* ==========================================================================
+   State-of-the-Art Scroll Reveal & Kinetic Depth Engine
+   - Multiplane dimensional reveal (scale + optical blur + vertical settling)
+   - Independent inner image parallax settling on cards
+   - Subtle top hairline highlight on stats
+   - Smooth section deck layering (#work over hero stage)
+   ========================================================================== */
+.section-incoming {
+  position: relative;
+}
+
+/* Base dimensional reveal item: emerges toward camera with optical rack-focus */
+.reveal-item {
+  opacity: 0;
+  transform: perspective(1200px) translate3d(0, 28px, 0) scale(0.975);
+  filter: blur(8px);
+  will-change: opacity, transform, filter;
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.05s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.85s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-item.is-visible {
+  opacity: 1;
+  transform: perspective(1200px) translate3d(0, 0, 0) scale(1) !important;
+  filter: blur(0px) !important;
+}
+
+/* Headings reveal with crisp typographic lift without excessive blur */
+.section-heading.reveal-item,
+.process-intro.reveal-item,
+.contact-intro.reveal-item {
+  transform: translate3d(0, 22px, 0);
+  filter: blur(4px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.7s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.section-heading.reveal-item.is-visible,
+.process-intro.reveal-item.is-visible,
+.contact-intro.reveal-item.is-visible {
+  transform: translate3d(0, 0, 0) !important;
+  filter: blur(0px) !important;
+}
+
+/* Cards: maintain 3D tilt perspective while revealing with depth */
+.project-card.reveal-item,
+.service-item.reveal-item,
+.stat-card.reveal-item {
+  transform: perspective(1200px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translate3d(0, 32px, 0) scale(0.97);
+  filter: blur(8px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease !important;
+}
+
+.project-card.reveal-item.is-visible,
+.service-item.reveal-item.is-visible,
+.stat-card.reveal-item.is-visible {
+  transform: perspective(1200px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translate3d(0, 0, 0) scale(1) !important;
+  filter: blur(0px) !important;
+}
+
+/* Project card inner visual: multiplane scale & scroll parallax */
+.project-card .project-image {
+  overflow: hidden;
+  position: relative;
+}
+
+.project-card .project-image img,
+.project-card .project-image > div {
+  transform: translateY(var(--image-lag-y, 0px)) scale(1.04);
+  filter: saturate(0.92);
+  will-change: transform, filter;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+}
+
+.project-card.reveal-item.is-visible .project-image img,
+.project-card.reveal-item.is-visible .project-image > div {
+  transform: translateY(var(--image-lag-y, 0px)) scale(1);
+  filter: saturate(1);
+}
+
+.project-card.reveal-item.is-visible:hover {
+  transform: perspective(1200px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translate3d(0, -6px, 0) scale(1.008) !important;
+  box-shadow: 0 24px 55px -12px rgba(34, 38, 34, 0.16) !important;
+  border-color: #bcc3ba !important;
+}
+
+.project-card.reveal-item.is-visible:hover .project-image img,
+.project-card.reveal-item.is-visible:hover .project-image > div {
+  transform: translateY(var(--image-lag-y, 0px)) scale(1.035);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Stat card top red hairline accent that traces across on reveal */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--reveal-delay, 0ms) + 150ms);
+}
+
+.stat-card.is-visible::after {
+  transform: scaleX(1);
+}
+
+/* Service items: modern hover glide */
+.service-item {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.service-item:hover {
+  transform: translateX(6px);
+}
+
+/* Layering transition: #work rolls over the hero with physical sheet depth */
+#work {
+  position: relative;
+  z-index: 10;
+  background: var(--paper);
+  box-shadow: 0 -24px 48px -12px rgba(20, 23, 20, 0.08);
+}
+
+.about-image,
+.precision-visual {
+  translate: 0 var(--visual-y, 0px);
+  rotate: var(--visual-rotate, 0deg);
+  will-change: transform;
+}
+
+.project-card {
+  isolation: isolate;
+}
+
+/* Desktop scroll stacking & hero stage */
+@media (min-width: 901px) and (min-height: 621px) {
+  .motion-ready .hero-scroll-stage {
+    height: 230svh;
+    min-height: 1400px;
+  }
+
+  .motion-ready .hero-scroll-stage .hero {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 620px;
+    display: flex;
+    flex-direction: column;
+    padding-top: 28px;
+  }
+
+  .motion-ready .hero-scroll-stage .hero-layout {
+    flex: 1;
+    min-height: 0;
+    margin: 30px 0 16px;
+  }
+
+  .motion-ready .hero-scroll-stage h1 {
+    font-size: clamp(4rem, 7.4vw, 7.7rem);
+    opacity: calc(1 - var(--hero-progress) * 1.7);
+    transform: translate3d(calc(var(--hero-progress) * -110px), calc(var(--hero-progress) * -90px), 0);
+    will-change: transform, opacity;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .motion-ready .hero-line:last-child {
+    transform: translateX(calc(var(--hero-progress) * 220px));
+  }
+
+  .motion-ready .hero-art-stage {
+    top: calc(30% - var(--hero-progress) * 25%);
+    right: calc(var(--hero-progress) * 2%);
+    width: calc(52% + var(--hero-progress) * 44%);
+    height: calc(65% + var(--hero-progress) * 30%);
+    border-radius: calc(8px + var(--hero-progress) * 20px);
+    transform: rotate(calc((1 - var(--hero-progress)) * -3deg));
+    box-shadow: 0 25px 60px rgba(34, 38, 34, 0.15);
+    transition: none;
+    will-change: width, height, transform;
+    z-index: 2;
+  }
+
+  .motion-ready .hero-art {
+    transform: scale(calc(1 + var(--hero-progress) * 0.18));
+  }
+
+  .motion-ready .hero-intro {
+    bottom: 4%;
+    opacity: var(--hero-copy-opacity);
+    transform: translateY(calc(var(--hero-progress) * 50px));
+    transition: visibility 0.1s;
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  .motion-ready .hero-intro:focus-within {
+    opacity: 1;
+    z-index: 6;
+    background: var(--paper);
+    pointer-events: auto;
+  }
+
+  .motion-ready .hero-bottom {
+    margin-top: auto;
+    flex-shrink: 0;
+  }
+
+  body .project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px 32px;
+  }
+
+  .project-card.featured {
+    grid-column: 1 / -1;
+  }
+
+  .project-card {
+    position: relative;
+    top: auto;
+    min-height: 0;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    margin: 0;
+    transform: none;
+    box-shadow: 0 4px 20px rgba(34, 38, 34, 0.04);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+  }
+
+  .project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 45px -12px rgba(34, 38, 34, 0.12);
+    border-color: #bcc3ba;
+  }
+
+  .project-card .project-image {
+    height: 380px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  body .project-card.featured .project-image {
+    height: 520px;
+    border-radius: 12px;
+  }
+
+  .project-caption {
+    margin-top: 22px;
+  }
+
+  .project-tags {
+    margin-top: 18px;
+  }
+
+  .work-section {
+    padding-bottom: 90px;
+  }
+
+  .project-image>div {
+    height: 100%;
+  }
+
+  .service-item {
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  .process-list li {
+    transition-duration: 1.1s;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-scroll-stage .hero-layout {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-top: 30px;
+  }
+
+  .hero-scroll-stage h1 {
+    font-size: 11.5vw;
+  }
+
+  .hero-art-stage {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1.5;
+    border-radius: 10px;
+  }
+
+  .hero-scroll-stage .hero-intro {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    display: flex;
+    gap: 16px;
+  }
+
+  .hero-scroll-stage .hero-intro p {
+    max-width: 580px;
+  }
+
+  .hero-art-label {
+    left: 16px;
+    bottom: 16px;
+    font-size: 0.75rem;
+  }
+
+  body .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card {
+    position: relative;
+  }
+
+  body .project-card .project-image {
+    height: 420px;
+  }
+
+  .motion-reveal {
+    transform: translate3d(0, 35px, 0);
+  }
+
+  .hero-bottom {
+    margin-top: 26px;
+  }
+
+  .about-image,
+  .precision-visual {
+    rotate: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-scroll-stage .hero {
+    padding-top: 24px;
+  }
+
+  .hero-scroll-stage .hero-layout {
+    gap: 22px;
+  }
+
+  .hero-scroll-stage h1 {
+    font-size: 11.8vw;
+  }
+
+  .hero-art-stage {
+    aspect-ratio: 1.25;
+  }
+
+  .hero-scroll-stage .hero-intro p {
+    font-size: 0.98rem;
+  }
+
+  .hero-bottom {
+    gap: 14px;
+  }
+
+  .hero-bottom>span {
+    display: none;
+  }
+
+  body .project-card .project-image {
+    height: 330px;
+  }
+
+  .hero-art-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    padding: 8px 12px;
+  }
+
+  .project-card::after {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .motion-ready .hero-scroll-stage {
+    height: auto;
+    min-height: 0;
+  }
+
+  .motion-ready .hero-scroll-stage .hero {
+    height: auto;
+    min-height: 0;
+    position: static;
+  }
+
+  .motion-ready .hero-scroll-stage .hero-layout {
+    min-height: 600px;
+  }
+
+  .motion-ready .hero-scroll-stage h1 {
+    transform: none;
+    opacity: 1;
+  }
+
+  .motion-ready .hero-line:last-child {
+    transform: none;
+  }
+
+  .motion-ready .hero-art-stage {
+    top: 170px;
+    right: 0;
+    width: 52%;
+    height: 410px;
+    transform: none;
+  }
+
+  .motion-ready .hero-intro {
+    opacity: 1;
+    transform: none;
+  }
+
+  .motion-ready .hero-art {
+    transform: none;
+  }
+
+  .motion-reveal,
+  .section-incoming,
+  .reveal-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .hero-top,
+  .hero-line,
+  .hero-art-stage,
+  .hero-intro,
+  .hero-bottom {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .project-card {
+    position: relative;
+    top: auto;
+    transform: none;
+  }
+
+  .project-card::after {
+    display: none;
+  }
+
+  .about-image,
+  .precision-visual {
+    translate: none;
+    rotate: none;
+  }
+
+  .scroll-track i {
+    animation: none;
+  }
+
+  .project-image>div {
+    transform: none !important;
+  }
+
+  body .page-entry-line {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Cinematic Splash Intro Sequence: MSF -> M S F -> Synchronized Full Name
+   1. Tight "MSF" monogram fades in centered
+   2. Transforms smoothly into spaced "M  S  F" initials
+   3. Both words expand simultaneously into "Mohammed Shehriyaar F"
+   4. Poised pause, then glides into top navbar wordmark
+   ========================================================================== */
+.intro-splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #141714;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s ease;
+  user-select: none;
+  cursor: default;
+}
+
+.intro-splash-overlay.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.intro-lockup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0px;
+  text-align: left;
+  transform-origin: top left;
+  will-change: transform, opacity, gap;
+  transition: transform 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+    gap 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro-lockup.phase-logo-solo {
+  gap: 0px;
+}
+
+.intro-lockup.phase-reveal-msf,
+.intro-lockup.phase-spaced,
+.intro-lockup.phase-expand,
+.intro-lockup.phase-pause {
+  gap: 16px;
+}
+
+.intro-lockup.phase-travel,
+.intro-lockup.phase-complete {
+  gap: 8px;
+}
+
+.intro-logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 28px rgba(190, 62, 46, 0.65));
+  flex-shrink: 0;
+}
+
+.phase-logo-solo .intro-logo-box {
+  animation: introLogoFadeIn 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes introLogoFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+    filter: drop-shadow(0 0 0px rgba(190, 62, 46, 0));
+  }
+
+  40% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 28px rgba(190, 62, 46, 0.65));
+  }
+}
+
+.intro-asterisk-icon {
+  width: 64px;
+  height: 64px;
+  color: var(--red);
+  transform-origin: center;
+  transition: width 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+    height 1.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Name wrapper: 0 width when logo is centered, unrolls MSF as logo slides left, then opens into full name */
+.intro-name-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  will-change: max-width, opacity;
+  transition: max-width 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.8s ease;
+}
+
+/* Monogram / Name Lockup: Stage 1 "MSF" (tight) -> Stage 2 "M  S  F" (spaced) -> Stage 3 Full Name */
+.intro-name-lockup {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  color: #f7f7f4;
+  line-height: 1.1;
+  text-shadow: 0 4px 22px rgba(0, 0, 0, 0.5);
+  will-change: gap, transform;
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Stage 1: Hidden while logo is solo in middle */
+.intro-name-lockup.state-logo-solo {
+  gap: 0.02em;
+  transform: translate3d(-14px, 0, 0);
+}
+
+/* Stage 2: Tight monogram "MSF" revealed beside logo */
+.intro-name-lockup.state-reveal-msf {
+  gap: 0.02em;
+  transform: translate3d(0, 0, 0);
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Stage 3: Smoothly transform "MSF" into spaced initials "M  S  F" */
+.intro-name-lockup.state-spaced {
+  gap: 0.44em;
+  transform: translate3d(0, 0, 0);
+  transition: gap 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Stage 4: Expanded state where words expand out into natural spacing at deliberate pace */
+.intro-name-lockup.is-expanded {
+  gap: 0.32em;
+  transform: translate3d(0, 0, 0);
+  transition: gap 2.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Individual words containing lead letter + expandable suffix track */
+.intro-word {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.intro-lead-letter {
+  display: inline-block;
+  line-height: 1.1;
+  font-weight: 600;
+  color: #f7f7f4;
+}
+
+/* Suffix track: 0 width during MSF and M S F states, then slowly and steadily expands */
+.intro-suffix-track {
+  display: inline-flex;
+  align-items: baseline;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+  opacity: 0;
+  will-change: max-width, opacity;
+  transition: max-width 2.8s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.intro-suffix-track.is-expanded {
+  opacity: 1;
+}
+
+.intro-suffix-text {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+/* Individual characters reveal with graceful stagger and soft-to-sharp focus */
+.intro-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(-6px, 0, 0);
+  filter: blur(2.5px);
+  will-change: opacity, transform, filter;
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.85s ease;
+}
+
+.intro-suffix-track.is-expanded .intro-char {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0px);
+}
+
+@media (max-width: 640px) {
+  .intro-asterisk-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .intro-name-lockup {
+    font-size: clamp(1.4rem, 4.8vw, 1.85rem);
+    letter-spacing: -0.03em;
+  }
+}
